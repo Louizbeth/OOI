@@ -1,5 +1,6 @@
 package ifpr.pgua.eic.tads;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import ifpr.pgua.eic.tads.modelos.Banco;
@@ -20,7 +21,7 @@ public class App {
 
     }
 
-    public static String menuBanco(){
+    public static String menuBanco() {
         String str = "";
 
         str += "1 - Listar as pessoas\n";
@@ -75,7 +76,7 @@ public class App {
             System.out.println(menuGeral());
             opcao = scan.nextInt();
             scan.nextLine();
-            if (opcao == 2) { //Menu da pessoa
+            if (opcao == 2) { // Menu da pessoa
                 System.out.println(menuPessoa());
                 opcao = scan.nextInt();
                 scan.nextLine();
@@ -91,8 +92,14 @@ public class App {
                         salario = scan.nextDouble();
 
                         pessoa = new Pessoa(nome, cpf, idade, salario);
-                        banco.cadastrarPessoa(pessoa);
-                        System.out.println("Cadastrada!");
+                        
+                        if(banco.cadastrarPessoa(pessoa)){
+                            System.out.println("Cadastrada!");
+                        }else{
+                            System.out.println("Erro ao cadastrar. Documento repetido!");
+                        }
+
+                        
                         break;
                     case 2:
                         System.out.println("Detalhes da pessoa");
@@ -103,7 +110,7 @@ public class App {
                         }
                         break;
                 }
-            } else if(opcao == 1){
+            } else if (opcao == 1) {
 
                 System.out.println(menuConta());
                 opcao = scan.nextInt();
@@ -111,8 +118,13 @@ public class App {
 
                 switch (opcao) {
                     case 1:
-                        if (pessoa != null) {
 
+                        System.out.println("Digite o documento da pessoa:");
+                        documento = scan.nextLine();
+
+                        pessoa = banco.buscarPessoa(documento);
+
+                        if (pessoa != null) {
                             System.out.println("Digite o número da conta:");
                             numeroDaConta = scan.nextInt();
                             scan.nextLine();
@@ -121,11 +133,13 @@ public class App {
                             scan.nextLine();
                             System.out.println("Digite a senha:");
                             senha = scan.nextLine();
+
                             System.out.println("Está ativa (1-sim;0-não)");
                             opcao = scan.nextInt();
                             ativa = opcao == 1;
                             System.out.println("Quer informa o saldo? (1-sim;0-não)");
                             opcao = scan.nextInt();
+
                             if (opcao == 1) {
                                 System.out.println("Digite o saldo:");
                                 saldo = scan.nextDouble();
@@ -136,9 +150,13 @@ public class App {
 
                             }
                             pessoa.setContaCorrente(conta);
+
+                            banco.cadastarConta(conta);
+
                             System.out.println("Conta criada!!");
-                        }else{
-                            System.out.println("Necessário uma pessoa!");
+
+                        } else {
+                            System.out.println("Pessoa não encontrada!!!");
                         }
                         break;
                     case 2:
@@ -182,21 +200,25 @@ public class App {
 
                         break;
                 }
-            }else if(opcao == 3){
+            } else if (opcao == 3) {
                 System.out.println(menuBanco());
                 opcao = scan.nextInt();
-                switch(opcao){
+                switch (opcao) {
                     case 1:
                         System.out.println("Listar pessoas!");
-                        Pessoa[] lista = banco.getPessoas();
-                        for(int i=0;i<lista.length;i++){
-                            System.out.println(lista[i]);
+                        ArrayList<Pessoa> lista = banco.getPessoas();
+                        for (int i = 0; i < lista.size(); i++) {
+                            System.out.println(lista.get(i));
                         }
-                    break;
+                        break;
                     case 2:
                         System.out.println("Listar contas!");
-                    break;
-                }   
+                        ArrayList<ContaCorrente> contas = banco.getContaCorrentes();
+                        for (int i = 0; i < contas.size(); i++) {
+                            System.out.println(contas.get(i));
+                        }
+                        break;
+                }
             }
 
         } while (opcao != 0);
